@@ -1,0 +1,33 @@
+{
+  "name": "nodemailer-ses-transport",
+  "version": "0.1.0",
+  "description": "SES transport for Nodemailer",
+  "main": "src/ses-transport.js",
+  "scripts": {
+    "test": "grunt"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/andris9/nodemailer-ses-transport.git"
+  },
+  "keywords": [
+    "SES",
+    "Nodemailer"
+  ],
+  "author": "Andris Reinman",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/andris9/nodemailer-ses-transport/issues"
+  },
+  "homepage": "http://github.com/andris9/nodemailer-ses-transport",
+  "dependencies": {
+    "aws-sdk": "2.0.4"
+  },
+  "devDependencies": {
+    "chai": "~1.8.1",
+    "grunt": "~0.4.1",
+    "grunt-contrib-jshint": "~0.8.0",
+    "grunt-mocha-test": "~0.10.0",
+    "sinon": "^1.9.0"
+  }
+}
