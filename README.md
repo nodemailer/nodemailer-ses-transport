@@ -23,10 +23,11 @@ var transporter = nodemailer.createTransport(sesTransport(options))
 
 Where
 
-  * **accessKeyId** - *optional* AWS access key.
-  * **secretAccessKey** - *optional* AWS secret.
-  * **sessionToken** - *optional* session token.
-  * **region** - *optional* Specify the region to send the service request to. Default to *us-east-1*
+  * **options** defines connection data
+    * **accessKeyId** - *optional* AWS access key.
+    * **secretAccessKey** - *optional* AWS secret.
+    * **sessionToken** - *optional* session token.
+    * **region** - *optional* Specify the region to send the service request to. Default to *us-east-1*
 
 **Example**
 
