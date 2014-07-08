@@ -33,8 +33,8 @@ Where
 
 ```javascript
 var transport = nodemailer.createTransport(sesTransport({
-    AWSAccessKeyID: "AWSACCESSKEY",
-    AWSSecretKey: "AWS/Secret/key"
+    accessKeyId: "AWSACCESSKEY",
+    secretAccessKey: "AWS/Secret/key"
 }));
 ```
 
