@@ -42,37 +42,38 @@ function SESTransport(options) {
 }
 
 /**
- * <p>Compiles a mailcomposer message and forwards it to handler that sends it.</p>
+ * <p>Compiles a BuildMail message and forwards it to handler that sends it.</p>
  *
- * @param {Object} emailMessage MailComposer object
+ * @param {Object} mail Mail object
  * @param {Function} callback Callback function to run when the sending is completed
  */
 SESTransport.prototype.send = function(mail, callback) {
     // SES strips this header line by itself
     mail.message.keepBcc = true;
 
-    this.generateMessage(mail.message.createReadStream(), (function(err, email) {
+    this.generateMessage(mail.message.createReadStream(), (function(err, raw) {
         if (err) {
             return typeof callback === 'function' && callback(err);
         }
-        this.handleMessage(email, callback);
+        this.handleMessage(mail, raw, callback);
     }).bind(this));
 };
 
 /**
  * <p>Compiles and sends the request to SES with e-mail data</p>
  *
- * @param {String} email Compiled raw e-mail as a string
+ * @param {Object} mail Mail object
+ * @param {String} raw Compiled raw e-mail as a string
  * @param {Function} callback Callback function to run once the message has been sent
  */
-SESTransport.prototype.handleMessage = function(email, callback) {
+SESTransport.prototype.handleMessage = function(mail, raw, callback) {
     var params = {
         RawMessage: { // required
-            Data: new Buffer(email, 'utf-8') // required
+            Data: new Buffer(raw, 'utf-8') // required
         }
     };
     this.ses.sendRawEmail(params, function(err, data) {
-        this.responseHandler(err, data, callback);
+        this.responseHandler(err, mail, data, callback);
     }.bind(this));
 };
 
@@ -80,10 +81,11 @@ SESTransport.prototype.handleMessage = function(email, callback) {
  * <p>Handles the response for the HTTP request to SES</p>
  *
  * @param {Object} err Error object returned from the request
+ * @param {Object} mail Mail object
  * @param {Object} data De-serialized data returned from the request
  * @param {Function} callback Callback function to run on end
  */
-SESTransport.prototype.responseHandler = function(err, data, callback) {
+SESTransport.prototype.responseHandler = function(err, mail, data, callback) {
     if (err) {
         if (!(err instanceof Error)) {
             err = new Error('Email failed: ' + err);
@@ -91,28 +93,30 @@ SESTransport.prototype.responseHandler = function(err, data, callback) {
         return typeof callback === 'function' && callback(err, null);
     }
     return typeof callback === 'function' && callback(null, {
+        envelope: mail.data.envelope || mail.message.getEnvelope(),
         messageId: data && data.MessageId && data.MessageId + '@email.amazonses.com'
     });
 };
 
 /**
- * <p>Compiles the messagecomposer object to a string.</p>
+ * <p>Compiles the BuildMail object to a string.</p>
  *
  * <p>SES requires strings as parameter so the message needs to be fully composed as a string.</p>
  *
- * @param {Object} emailMessage MailComposer object
+ * @param {Object} mailStream BuildMail stream
  * @param {Function} callback Callback function to run once the message has been compiled
  */
 
-SESTransport.prototype.generateMessage = function(emailMessage, callback) {
-    var email = '';
+SESTransport.prototype.generateMessage = function(mailStream, callback) {
+    var chunks = [];
+    var chunklen = 0;
 
-    emailMessage.on('data', function(chunk) {
-        email += (chunk || '').toString('utf-8');
+    mailStream.on('data', function(chunk) {
+        chunks.push(chunk);
+        chunklen += chunk.length;
     });
 
-    emailMessage.on('end', function(chunk) {
-        email += (chunk || '').toString('utf-8');
-        callback(null, email);
+    mailStream.on('end', function() {
+        callback(null, Buffer.concat(chunks, chunklen).toString());
     });
 };

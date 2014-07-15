@@ -1,6 +1,6 @@
 {
   "name": "nodemailer-ses-transport",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "SES transport for Nodemailer",
   "main": "src/ses-transport.js",
   "scripts": {
