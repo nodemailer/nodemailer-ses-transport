@@ -1,6 +1,6 @@
 {
   "name": "nodemailer-ses-transport",
-  "version": "0.1.1",
+  "version": "1.0.0",
   "description": "SES transport for Nodemailer",
   "main": "src/ses-transport.js",
   "scripts": {
@@ -21,7 +21,7 @@
   },
   "homepage": "http://github.com/andris9/nodemailer-ses-transport",
   "dependencies": {
-    "aws-sdk": "2.0.4"
+    "aws-sdk": "^2.0.9"
   },
   "devDependencies": {
     "chai": "~1.8.1",
