@@ -57,4 +57,99 @@ describe('SES Transport Tests', function() {
             done();
         });
     });
+
+    it('Should not use rate limiting', function(done) {
+        var client = sesTransport({
+            AWSAccessKeyID: "AWSACCESSKEY",
+            AWSSecretKey: "AWS/Secret/key"
+        });
+
+        sinon.stub(client.ses, 'sendRawEmail').yields(null, {
+            MessageId: 'abc'
+        });
+
+        client.send({
+            data: {},
+            message: new MockBuilder({
+                from: 'test@valid.sender',
+                to: 'test@valid.recipient'
+            }, 'message')
+        }, function(err, data) {
+            expect(err).to.not.exist;
+            expect(data.messageId).to.equal('abc@email.amazonses.com');
+            expect(client.ses.sendRawEmail.args[0][0]).to.deep.equal({
+                RawMessage: {
+                    Data: new Buffer('message')
+                }
+            });
+
+            var start = Date.now();
+            client.send({
+                data: {},
+                message: new MockBuilder({
+                    from: 'test@valid.sender',
+                    to: 'test@valid.recipient'
+                }, 'message')
+            }, function(err, data) {
+                expect(err).to.not.exist;
+                expect(data.messageId).to.equal('abc@email.amazonses.com');
+                expect(client.ses.sendRawEmail.args[0][0]).to.deep.equal({
+                    RawMessage: {
+                        Data: new Buffer('message')
+                    }
+                });
+                expect(Date.now() - start).to.be.lte(200);
+                client.ses.sendRawEmail.restore();
+                done();
+            });
+        });
+    });
+
+    it('Should use rate limiting', function(done) {
+        var client = sesTransport({
+            AWSAccessKeyID: "AWSACCESSKEY",
+            AWSSecretKey: "AWS/Secret/key",
+            rateLimit: 1
+        });
+
+        sinon.stub(client.ses, 'sendRawEmail').yields(null, {
+            MessageId: 'abc'
+        });
+
+        client.send({
+            data: {},
+            message: new MockBuilder({
+                from: 'test@valid.sender',
+                to: 'test@valid.recipient'
+            }, 'message')
+        }, function(err, data) {
+            expect(err).to.not.exist;
+            expect(data.messageId).to.equal('abc@email.amazonses.com');
+            expect(client.ses.sendRawEmail.args[0][0]).to.deep.equal({
+                RawMessage: {
+                    Data: new Buffer('message')
+                }
+            });
+
+            var start = Date.now();
+            client.send({
+                data: {},
+                message: new MockBuilder({
+                    from: 'test@valid.sender',
+                    to: 'test@valid.recipient'
+                }, 'message')
+            }, function(err, data) {
+                expect(err).to.not.exist;
+                expect(data.messageId).to.equal('abc@email.amazonses.com');
+                expect(client.ses.sendRawEmail.args[0][0]).to.deep.equal({
+                    RawMessage: {
+                        Data: new Buffer('message')
+                    }
+                });
+                expect(Date.now() - start).to.be.gte(800);
+                client.ses.sendRawEmail.restore();
+                done();
+            });
+        });
+    });
 });

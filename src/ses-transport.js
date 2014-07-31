@@ -35,6 +35,10 @@ function SESTransport(options) {
     this.options.apiVersion = '2010-12-01';
     this.options.region = options.region || (result && result[3]) || 'us-east-1';
 
+    this.options.rateLimit = Number(options.rateLimit) || false;
+    this.queue = [];
+    this.sending = false;
+
     this.name = 'SES';
     this.version = packageData.version;
 
@@ -42,7 +46,7 @@ function SESTransport(options) {
 }
 
 /**
- * <p>Compiles a BuildMail message and forwards it to handler that sends it.</p>
+ * Appends the message to the queue if rate limiting is used, or passes directly to the sending function
  *
  * @param {Object} mail Mail object
  * @param {Function} callback Callback function to run when the sending is completed
@@ -51,6 +55,62 @@ SESTransport.prototype.send = function(mail, callback) {
     // SES strips this header line by itself
     mail.message.keepBcc = true;
 
+    if (this.options.rateLimit) {
+        this.queue.push({
+            mail: mail,
+            callback: callback
+        });
+        this.processQueue();
+    } else {
+        this.sendMessage(mail, callback);
+    }
+};
+
+/**
+ * Sends the next message from the queue
+ */
+SESTransport.prototype.processQueue = function() {
+    if (this.sending) {
+        return;
+    }
+
+    if (!this.queue.length) {
+        return;
+    }
+
+    this.sending = true;
+    var item = this.queue.shift();
+    var startTime = Date.now();
+
+    this.sendMessage(item.mail, function() {
+        var args = Array.prototype.slice.call(arguments);
+        var timeDelta = Date.now() - startTime;
+
+        if (typeof item.callback === 'function') {
+            setImmediate(function() {
+                item.callback.apply(null, args);
+            });
+        }
+
+        if (timeDelta >= 1000 / this.options.rateLimit) {
+            this.sending = false;
+            setImmediate(this.processQueue.bind(this));
+        } else {
+            setTimeout(function() {
+                this.sending = false;
+                this.processQueue();
+            }.bind(this), Math.ceil(1000 / this.options.rateLimit - timeDelta));
+        }
+    }.bind(this));
+};
+
+/**
+ * <p>Compiles a BuildMail message and forwards it to handler that sends it.</p>
+ *
+ * @param {Object} mail Mail object
+ * @param {Function} callback Callback function to run when the sending is completed
+ */
+SESTransport.prototype.sendMessage = function(mail, callback) {
     this.generateMessage(mail.message.createReadStream(), (function(err, raw) {
         if (err) {
             return typeof callback === 'function' && callback(err);
