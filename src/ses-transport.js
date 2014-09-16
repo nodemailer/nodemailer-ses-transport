@@ -35,7 +35,11 @@ function SESTransport(options) {
     this.options.apiVersion = '2010-12-01';
     this.options.region = options.region || (result && result[3]) || 'us-east-1';
 
-    this.options.rateLimit = Number(options.rateLimit) || false;
+    if (options.httpOptions) {
+        this.options.httpOptions = options.httpOptions;
+    }
+
+    this.rateLimit = Number(options.rateLimit) || false;
     this.queue = [];
     this.sending = false;
 
@@ -55,7 +59,7 @@ SESTransport.prototype.send = function(mail, callback) {
     // SES strips this header line by itself
     mail.message.keepBcc = true;
 
-    if (this.options.rateLimit) {
+    if (this.rateLimit) {
         this.queue.push({
             mail: mail,
             callback: callback
@@ -92,14 +96,14 @@ SESTransport.prototype.processQueue = function() {
             });
         }
 
-        if (timeDelta >= 1000 / this.options.rateLimit) {
+        if (timeDelta >= 1000 / this.rateLimit) {
             this.sending = false;
             setImmediate(this.processQueue.bind(this));
         } else {
             setTimeout(function() {
                 this.sending = false;
                 this.processQueue();
-            }.bind(this), Math.ceil(1000 / this.options.rateLimit - timeDelta));
+            }.bind(this), Math.ceil(1000 / this.rateLimit - timeDelta));
         }
     }.bind(this));
 };

@@ -28,6 +28,7 @@ Where
     * **secretAccessKey** - *optional* AWS secret.
     * **sessionToken** - *optional* session token.
     * **region** - *optional* Specify the region to send the service request to. Default to *us-east-1*
+    * **httpOptions** - A set of options to pass to the low-level AWS HTTP request. See options in the [AWS-SES docs](http://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/SES.html).
     * **rateLimit** - *optional* Specify the amount of messages that [can be sent in 1 second](http://docs.aws.amazon.com/ses/latest/DeveloperGuide/limits.html). For example if you want to send at most 5 messages in a second, set this value to 5. If you do not set it, rate limiting is not applied and messages are sent out immediatelly.
 
 **Example**
