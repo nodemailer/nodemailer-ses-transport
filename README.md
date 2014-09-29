@@ -1,6 +1,6 @@
 # SES transport module for Nodemailer
 
-Applies for Nodemailer v1.x and not for v0.x where transports are built-in.
+Applies for [Nodemailer](http://www.nodemailer.com/) v1.x and not for v0.x where transports are built-in.
 
 ## Usage
 
