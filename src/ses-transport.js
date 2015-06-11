@@ -14,6 +14,7 @@ module.exports = function(options) {
  * <p>Possible options can be the following:</p>
  *
  * <ul>
+ *     <li><b>ses</b> - instantiated AWS SES object. If not provided then one is generated using provided information.</li>
  *     <li><b>accessKeyId</b> - AWS access key (optional)</li>
  *     <li><b>secretAccessKey</b> - AWS secret (optional)</li>
  *     <li><b>region</b> - optional region (defaults to <code>'us-east-1'</code>)
@@ -24,19 +25,23 @@ module.exports = function(options) {
  */
 function SESTransport(options) {
     options = options || {};
-
-    var pattern = /(.*)email(.*)\.(.*).amazonaws.com/i,
-        result = pattern.exec(options.ServiceUrl);
+    var serviceUrlRegion = [].concat(/(.*)email(.*)\.(.*).amazonaws.com/i.exec(options.ServiceUrl) || [])[3];
 
     this.options = options;
-    this.options.accessKeyId = options.accessKeyId || options.AWSAccessKeyID;
-    this.options.secretAccessKey = options.secretAccessKey || options.AWSSecretKey;
-    this.options.sessionToken = options.sessionToken || options.AWSSecurityToken;
-    this.options.apiVersion = '2010-12-01';
-    this.options.region = options.region || (result && result[3]) || 'us-east-1';
 
-    if (options.httpOptions) {
-        this.options.httpOptions = options.httpOptions;
+    if (!options.ses) {
+        this.options.accessKeyId = options.accessKeyId || options.AWSAccessKeyID;
+        this.options.secretAccessKey = options.secretAccessKey || options.AWSSecretKey;
+        this.options.sessionToken = options.sessionToken || options.AWSSecurityToken;
+        this.options.apiVersion = '2010-12-01';
+        this.options.region = options.region || serviceUrlRegion || 'us-east-1';
+
+        if (options.httpOptions) {
+            this.options.httpOptions = options.httpOptions;
+        }
+        this.ses = new AWS.SES(this.options);
+    } else {
+        this.ses = options.ses;
     }
 
     this.rateLimit = Number(options.rateLimit) || false;
@@ -45,8 +50,6 @@ function SESTransport(options) {
 
     this.name = 'SES';
     this.version = packageData.version;
-
-    this.ses = new AWS.SES(this.options);
 }
 
 /**

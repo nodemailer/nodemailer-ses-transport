@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.3.0 2015-06-11
+
+Added options `ses` to allow using an existing AWS SES object instead of creating a new one with credentials.
+
 ## v1.2.0 2014-09-16
 
 Added option `httpOptions` that maps to the object in underlying AWS.SES constructor. See options [here](http://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/SES.html).
