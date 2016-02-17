@@ -47,6 +47,8 @@ function SESTransport(options) {
     this.rateLimit = Number(options.rateLimit) || false;
     this.queue = [];
     this.sending = false;
+    this.startTime = 0;
+    this.count = 0;
 
     this.name = 'SES';
     this.version = packageData.version;
@@ -78,6 +80,19 @@ SESTransport.prototype.send = function(mail, callback) {
  */
 SESTransport.prototype.processQueue = function() {
     if (this.sending) {
+        var timeDelta = Date.now() - this.startTime;
+
+        if (timeDelta >= 1000 / this.rateLimit) {
+            this.count = 0;
+            this.sending = false;
+            setImmediate(this.processQueue.bind(this));
+        } else {
+            this.count++;
+            setTimeout(function() {
+                this.sending = false;
+                this.processQueue();
+            }.bind(this), Math.ceil(1000 / this.rateLimit * this.count - timeDelta));
+        }
         return;
     }
 
@@ -86,27 +101,16 @@ SESTransport.prototype.processQueue = function() {
     }
 
     this.sending = true;
+    this.startTime = Date.now();
     var item = this.queue.shift();
-    var startTime = Date.now();
 
     this.sendMessage(item.mail, function() {
         var args = Array.prototype.slice.call(arguments);
-        var timeDelta = Date.now() - startTime;
 
         if (typeof item.callback === 'function') {
             setImmediate(function() {
                 item.callback.apply(null, args);
             });
-        }
-
-        if (timeDelta >= 1000 / this.rateLimit) {
-            this.sending = false;
-            setImmediate(this.processQueue.bind(this));
-        } else {
-            setTimeout(function() {
-                this.sending = false;
-                this.processQueue();
-            }.bind(this), Math.ceil(1000 / this.rateLimit - timeDelta));
         }
     }.bind(this));
 };
