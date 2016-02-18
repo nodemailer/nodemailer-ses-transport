@@ -1,5 +1,10 @@
 # Changelog
 
+## v1.3.0 2016-02-18
+
+  * Replaces jshint with eslint
+  * Fix behavior of set option `rateLimit` (yamayo)
+
 ## v1.3.0 2015-06-11
 
 Added options `ses` to allow using an existing AWS SES object instead of creating a new one with credentials.

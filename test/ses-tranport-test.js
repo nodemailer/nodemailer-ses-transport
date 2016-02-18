@@ -1,3 +1,6 @@
+/* eslint no-unused-expressions: 0*/
+/* global it: false, describe: false */
+
 'use strict';
 
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
@@ -5,8 +8,8 @@ process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 var chai = require('chai');
 var expect = chai.expect;
 var sinon = require('sinon');
-var sesTransport = require('../src/ses-transport');
-chai.Assertion.includeStack = true;
+var sesTransport = require('../lib/ses-transport');
+chai.config.includeStack = true;
 
 function MockBuilder(envelope, message) {
     this.envelope = envelope;
@@ -14,25 +17,25 @@ function MockBuilder(envelope, message) {
     this.message.end(message);
 }
 
-MockBuilder.prototype.getEnvelope = function() {
+MockBuilder.prototype.getEnvelope = function () {
     return this.envelope;
 };
 
-MockBuilder.prototype.createReadStream = function() {
+MockBuilder.prototype.createReadStream = function () {
     return this.message;
 };
 
-describe('SES Transport Tests', function() {
-    it('Should expose version number', function() {
+describe('SES Transport Tests', function () {
+    it('Should expose version number', function () {
         var client = sesTransport();
         expect(client.name).to.exist;
         expect(client.version).to.exist;
     });
 
-    it('Should send message', function(done) {
+    it('Should send message', function (done) {
         var client = sesTransport({
-            AWSAccessKeyID: "AWSACCESSKEY",
-            AWSSecretKey: "AWS/Secret/key"
+            AWSAccessKeyID: 'AWSACCESSKEY',
+            AWSSecretKey: 'AWS/Secret/key'
         });
 
         sinon.stub(client.ses, 'sendRawEmail').yields(null, {
@@ -45,7 +48,7 @@ describe('SES Transport Tests', function() {
                 from: 'test@valid.sender',
                 to: 'test@valid.recipient'
             }, 'message')
-        }, function(err, data) {
+        }, function (err, data) {
             expect(err).to.not.exist;
             expect(data.messageId).to.equal('abc@email.amazonses.com');
             expect(client.ses.sendRawEmail.args[0][0]).to.deep.equal({
@@ -58,10 +61,10 @@ describe('SES Transport Tests', function() {
         });
     });
 
-    it('Should not use rate limiting', function(done) {
+    it('Should not use rate limiting', function (done) {
         var client = sesTransport({
-            AWSAccessKeyID: "AWSACCESSKEY",
-            AWSSecretKey: "AWS/Secret/key"
+            AWSAccessKeyID: 'AWSACCESSKEY',
+            AWSSecretKey: 'AWS/Secret/key'
         });
 
         sinon.stub(client.ses, 'sendRawEmail').yields(null, {
@@ -74,7 +77,7 @@ describe('SES Transport Tests', function() {
                 from: 'test@valid.sender',
                 to: 'test@valid.recipient'
             }, 'message')
-        }, function(err, data) {
+        }, function (err, data) {
             expect(err).to.not.exist;
             expect(data.messageId).to.equal('abc@email.amazonses.com');
             expect(client.ses.sendRawEmail.args[0][0]).to.deep.equal({
@@ -90,7 +93,7 @@ describe('SES Transport Tests', function() {
                     from: 'test@valid.sender',
                     to: 'test@valid.recipient'
                 }, 'message')
-            }, function(err, data) {
+            }, function (err, data) {
                 expect(err).to.not.exist;
                 expect(data.messageId).to.equal('abc@email.amazonses.com');
                 expect(client.ses.sendRawEmail.args[0][0]).to.deep.equal({
@@ -105,10 +108,10 @@ describe('SES Transport Tests', function() {
         });
     });
 
-    it('Should use rate limiting', function(done) {
+    it('Should use rate limiting', function (done) {
         var client = sesTransport({
-            AWSAccessKeyID: "AWSACCESSKEY",
-            AWSSecretKey: "AWS/Secret/key",
+            AWSAccessKeyID: 'AWSACCESSKEY',
+            AWSSecretKey: 'AWS/Secret/key',
             rateLimit: 1
         });
 
@@ -122,7 +125,7 @@ describe('SES Transport Tests', function() {
                 from: 'test@valid.sender',
                 to: 'test@valid.recipient'
             }, 'message')
-        }, function(err, data) {
+        }, function (err, data) {
             expect(err).to.not.exist;
             expect(data.messageId).to.equal('abc@email.amazonses.com');
             expect(client.ses.sendRawEmail.args[0][0]).to.deep.equal({
@@ -138,7 +141,7 @@ describe('SES Transport Tests', function() {
                     from: 'test@valid.sender',
                     to: 'test@valid.recipient'
                 }, 'message')
-            }, function(err, data) {
+            }, function (err, data) {
                 expect(err).to.not.exist;
                 expect(data.messageId).to.equal('abc@email.amazonses.com');
                 expect(client.ses.sendRawEmail.args[0][0]).to.deep.equal({
