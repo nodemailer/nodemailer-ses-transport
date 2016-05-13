@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.3.1 2016-05-13
+
+  * Added error handler for broken message generator
+
 ## v1.3.0 2016-02-18
 
   * Replaces jshint with eslint
