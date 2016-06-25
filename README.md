@@ -31,6 +31,7 @@ Where
     * **region** - *optional* Specify the region to send the service request to. Defaults to *us-east-1*. Not used if `options.ses` is set.
     * **httpOptions** - A set of options to pass to the low-level AWS HTTP request. See options in the [AWS-SES docs](http://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/SES.html). Not used if `options.ses` is set.
     * **rateLimit** - *optional* Specify the amount of messages that [can be sent in 1 second](http://docs.aws.amazon.com/ses/latest/DeveloperGuide/limits.html). For example if you want to send at most 5 messages in a second, set this value to 5. If you do not set it, rate limiting is not applied and messages are sent out immediately.
+    * **maxConnections** - *optional* Specify the maximum number of messages to be "in-flight" at any one point in time. Useful for preventing suffocation of an internet connection when sending lots of messages.
 
 ### Examples
 
