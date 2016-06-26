@@ -2,6 +2,10 @@
 
 Applies for [Nodemailer](http://www.nodemailer.com/) v1+ and not for v0.x where transports are built-in.
 
+## Warning about AWS tokens
+
+It has been reported that keys that have special symbols in it (ie. slash /) probably do not work and return signature errors. To overcome this, try to generate keys with only letters and numbers.
+
 ## Usage
 
 Install with npm
