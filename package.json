@@ -1,6 +1,6 @@
 {
   "name": "nodemailer-ses-transport",
-  "version": "1.4.0",
+  "version": "1.5.0",
   "description": "SES transport for Nodemailer",
   "main": "lib/ses-transport.js",
   "scripts": {
@@ -21,15 +21,15 @@
   },
   "homepage": "http://github.com/andris9/nodemailer-ses-transport",
   "dependencies": {
-    "aws-sdk": "^2.4.2"
+    "aws-sdk": "^2.6.12"
   },
   "devDependencies": {
     "chai": "~3.5.0",
     "grunt": "~1.0.1",
     "grunt-cli": "^1.2.0",
-    "grunt-eslint": "~18.1.0",
-    "grunt-mocha-test": "~0.12.7",
-    "mocha": "^2.5.3",
-    "sinon": "^1.17.4"
+    "grunt-eslint": "~19.0.0",
+    "grunt-mocha-test": "~0.13.2",
+    "mocha": "^3.1.2",
+    "sinon": "^1.17.6"
   }
 }
