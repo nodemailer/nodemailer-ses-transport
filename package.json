@@ -16,14 +16,16 @@
   ],
   "author": "Andris Reinman",
   "license": "MIT",
+  "typings": "typescript/ses-transport.d.ts",
   "bugs": {
     "url": "https://github.com/andris9/nodemailer-ses-transport/issues"
   },
   "homepage": "http://github.com/andris9/nodemailer-ses-transport",
   "dependencies": {
-    "aws-sdk": "^2.6.12"
+    "aws-sdk": "^2.7.10"
   },
   "devDependencies": {
+    "@types/nodemailer": "^1.3.32",
     "chai": "~3.5.0",
     "grunt": "~1.0.1",
     "grunt-cli": "^1.2.0",
