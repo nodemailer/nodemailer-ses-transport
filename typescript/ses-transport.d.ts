@@ -1,10 +1,14 @@
 import { Transport } from 'nodemailer';
 import * as AWS from 'aws-sdk';
 
-export interface SesTransportOptions {
+declare namespace sesTransport {
+  interface SesTransportOptions {
     ses: AWS.SES;
     rateLimit?: number;
     maxConnections?: number;
+  }
 }
 
-export function sesTransport(options: SesTransportOptions): Transport
+declare function sesTransport(options: sesTransport.SesTransportOptions): Transport
+
+export = sesTransport;
