@@ -1,8 +1,14 @@
-# SES transport module for Nodemailer
+# Deprecation notice
+
+This module is deprecated in favor of the built-in SES module for Nodemailer. See the docs for it [here](https://nodemailer.com/transports/ses/).
+
+The following is here for historic reasons. The module is not supported or maintained.
+
+## SES transport module for Nodemailer
 
 Applies for [Nodemailer](http://www.nodemailer.com/) v1+ and not for v0.x where transports are built-in.
 
-## Usage
+### Usage
 
 Install with npm
 
@@ -32,7 +38,7 @@ Where
     * **httpOptions** - A set of options to pass to the low-level AWS HTTP request. See options in the [AWS-SES docs](http://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/SES.html). Not used if `options.ses` is set.
     * **rateLimit** - *optional* Specify the amount of messages that [can be sent in 1 second](http://docs.aws.amazon.com/ses/latest/DeveloperGuide/limits.html). For example if you want to send at most 5 messages in a second, set this value to 5. If you do not set it, rate limiting is not applied and messages are sent out immediately.
 
-### Examples
+#### Examples
 
 **Example 1.** Use AWS credentials to set up the sender
 
